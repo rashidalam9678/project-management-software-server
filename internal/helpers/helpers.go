@@ -4,13 +4,10 @@ import (
 	// "fmt"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
-	// "runtime/debug"
 	"encoding/json"
 	"errors"
 	"io"
 	"strings"
-
-	// "github.com/rashidalam9678/project-management-software-server/internal/config"
 )
 
 // jsonResponse is the type used for generic JSON responses
@@ -20,35 +17,10 @@ type jsonResponse struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
-// var app *config.AppConfig
-
-// func NewHelpers(a *config.AppConfig) {
-// 	app = a
-// }
-
-// func ClientError(w http.ResponseWriter, status int) {
-// 	app.InfoLog.Println("Client error with status code ", status)
-// 	http.Error(w, http.StatusText(status), status)
-// }
-
-// func ServerError(w http.ResponseWriter, err error) {
-// 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
-// 	app.ErrorLog.Println(trace)
-// 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-// }
-
-// func IsAuthenticated(r *http.Request) bool {
-// 	exist := app.Session.Exists(r.Context(), "user_id")
-// 	return exist
-// }
-
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
 }
-
-
-
 
 func  ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
 	maxBytes := 1048576 // one megabyte

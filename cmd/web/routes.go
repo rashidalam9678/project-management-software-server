@@ -23,25 +23,33 @@ type jsonResponse struct {
 }
 
 func routes(app *config.AppConfig) http.Handler{
-	fmt.Println("Routes registered")
 	mux:= mux.NewRouter()
-	// mux.Use(corsMiddleware)
-
+	//get the private key from the environment
 	clerk_key:=os.Getenv("CLERK_PRIVATE_KEY")
 
+	//create a new clerk client
 	client, err:= clerk.NewClient(clerk_key)
 	if err != nil{
 		fmt.Println("Error in clerk")
 	}
+
 	//public routes
 	mux.HandleFunc("/", handlers.Repo.Ping)
 	mux.HandleFunc("/user",handlers.Repo.CreateNewUser).Methods("POST")
+	mux.HandleFunc("/user",handlers.Repo.DeleteUser).Methods("DELETE")
 
 	// protected routes
-	subrouter:=mux.PathPrefix("/protected").Subrouter()
+	subrouter:=mux.PathPrefix("/api/v1").Subrouter()
 	subrouter.Use(AuthenticateToken(client))
-	subrouter.HandleFunc("/test", MyHandler)
 
+	//project routes
+	subrouter.HandleFunc("/projects",handlers.Repo.CreateNewProject).Methods("POST")
+	subrouter.HandleFunc("/projects",handlers.Repo.GetUserProjects).Methods("GET")
+	subrouter.HandleFunc("/projects/{id}",handlers.Repo.GetProject).Methods("GET")
+	subrouter.HandleFunc("/projects/{id}",handlers.Repo.DeleteProject).Methods("DELETE")
+	subrouter.HandleFunc("/projects/{id}",handlers.Repo.UpdateProject).Methods("PUT")
+
+	// Create a new CORS middleware with a few options
 	corsHandler := middlewareHandler.CORS(
 		middlewareHandler.AllowedOrigins([]string{"*"}),      // Adjust as needed for your frontend's origin
 		middlewareHandler.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
@@ -52,32 +60,6 @@ func routes(app *config.AppConfig) http.Handler{
 	handler := corsHandler(mux)
 
 	return handler
-}
-
-func MyHandler(w http.ResponseWriter, r *http.Request){
-
-	// Retrieve the attached data from the context
-	userID, ok := r.Context().Value("externalId").(string)
-	if !ok {
-		payLoad:=jsonResponse{}
-		payLoad.Error=true
-		payLoad.Message="external id context not found"
-		helpers.WriteJSON(w,http.StatusInternalServerError,payLoad)
-		return
-	}
-
-	//create the response
-	payLoad:=jsonResponse{}
-	payLoad.Data=userID
-	payLoad.Error=false
-	payLoad.Message="this is the authorised person"
-
-
-	err:=helpers.WriteJSON(w,http.StatusOK,payLoad)
-
-	if err != nil{
-		fmt.Println(err)
-	}
 }
 
 // AuthenticateToken middleware authenticate the token and add the external id from clerk to the context

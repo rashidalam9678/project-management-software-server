@@ -59,7 +59,7 @@ func (m *Repository) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	
 	type credentials struct {
 		Email string `json:"email"`
-		ExternalID string `json:"external_id"`
+		ID string `json:"id"`
 	}
 
 	var creds credentials
@@ -73,7 +73,7 @@ func (m *Repository) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
 	}
 
-	_,err= m.DB.GetUserByExternalID(creds.ExternalID)
+	_,err= m.DB.GetUserByID(creds.ID)
 
 	if err==nil  {
 		m.App.ErrorLog.Println(err)
@@ -84,7 +84,7 @@ func (m *Repository) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//now insert user in database
-	userId,err:=m.DB.InsertUser(creds.Email,creds.ExternalID)
+	userId,err:=m.DB.InsertUser(creds.Email,creds.ID)
 
 	if err != nil {
 		m.App.ErrorLog.Println(err)
@@ -103,3 +103,45 @@ func (m *Repository) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		m.App.ErrorLog.Println(err)
 	}		
 }
+
+// DeleteUser handler deletes the user from the database
+func (m *Repository) DeleteUser(w http.ResponseWriter, r *http.Request) {
+
+	type credentials struct {
+		ID string `json:"id"`
+	}
+
+	var creds credentials
+	var payload jsonResponse
+
+	err := helpers.ReadJSON(w, r, &creds)
+	if err != nil {
+		m.App.ErrorLog.Println(err)
+		payload.Error = true
+		payload.Message = "invalid json supplied, or json missing entirely"
+		_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
+	}
+
+	user,err:=m.DB.GetUserByID(creds.ID)
+	if err!=nil{
+		m.App.ErrorLog.Println(err)
+		payload.Error=true
+		payload.Message="user not found"
+		helpers.WriteJSON(w,http.StatusAccepted,payload)
+		return
+	}
+
+	err=m.DB.DeleteUserByID(user.ID)
+	if err!=nil{
+		m.App.ErrorLog.Println(err)
+		payload.Error=true
+		payload.Message="unable to delete user"
+		helpers.WriteJSON(w,http.StatusAccepted,payload)
+		return
+	}
+
+	payload.Error=false
+	payload.Message="user deleted successfully"
+	helpers.WriteJSON(w,http.StatusOK,payload)
+}
+
