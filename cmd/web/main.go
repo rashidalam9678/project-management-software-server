@@ -16,6 +16,8 @@ var app config.AppConfig
 func main(){
 	//load envs
 	godotenv.Load()
+	clerk_key := os.Getenv("CLERK_PRIVATE_KEY")
+	sendgrid_key:=os.Getenv("SENDGRID_API_KEY")
 
 	//Connect to Databas and intitalise the configs
 	db,err:= driver.ConnectDB()
@@ -37,7 +39,7 @@ func main(){
 	//create the server
 	srv:= &http.Server{
 		Addr: ":8080",
-		Handler: routes(&app),
+		Handler: routes(&app,clerk_key,sendgrid_key),
 	}
 
 	//start the http server
