@@ -38,12 +38,12 @@ func main(){
 
 	//create the server
 	srv:= &http.Server{
-		Addr: ":8080",
+		Addr: "0.0.0.0:8080",
 		Handler: routes(&app,clerk_key,sendgrid_key),
 	}
 
 	//start the http server
-	fmt.Println("Starting the server at http://localhost:8080")
+	fmt.Println("Starting the server at port 8080")
 	err=srv.ListenAndServe()
 	if err !=nil{
 		log.Fatal("Unable to start the server")

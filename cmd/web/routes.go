@@ -62,6 +62,8 @@ func routes(app *config.AppConfig, clerkKey string, sendgridKey string) http.Han
 
 	})
 
+	// mux.HandleFunc("/invite", handlers.Repo.SendInvite).Methods("POST")
+
 	// protected routes
 	subrouter := mux.PathPrefix("/api/v1").Subrouter()
 	subrouter.Use(AuthenticateToken(client))
