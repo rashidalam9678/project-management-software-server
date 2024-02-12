@@ -31,14 +31,14 @@ func main(){
 
 	app.ErrorLog=errorLog
 	app.InfoLog=infoLog
-	app.Port=8080
+	app.Port="8080"
 
 	repo:=handlers.NewRepo(&app,db)
 	handlers.NewHandlers(repo)
 
 	//create the server
 	srv:= &http.Server{
-		Addr: "0.0.0.0:8080",
+		Addr: "0.0.0.0:"+app.Port,
 		Handler: routes(&app,clerk_key,sendgrid_key),
 	}
 
