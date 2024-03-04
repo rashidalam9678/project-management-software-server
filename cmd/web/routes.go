@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
@@ -14,8 +13,7 @@ import (
 	"github.com/rashidalam9678/project-management-software-server/internal/config"
 	"github.com/rashidalam9678/project-management-software-server/internal/handlers"
 	"github.com/rashidalam9678/project-management-software-server/internal/helpers"
-	"github.com/sendgrid/sendgrid-go"
-	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	
 )
 
 // jsonResponse is the type used for generic JSON responses
@@ -25,7 +23,7 @@ type jsonResponse struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
-func routes(app *config.AppConfig, clerkKey string, sendgridKey string) http.Handler {
+func routes(app *config.AppConfig, clerkKey string) http.Handler {
 	mux := mux.NewRouter()
 	//get the private key from the environment
 	
@@ -36,31 +34,14 @@ func routes(app *config.AppConfig, clerkKey string, sendgridKey string) http.Han
 		fmt.Println("Error in clerk")
 	}
 
+	// member invite routes
+
+
 	//public routes
 	mux.HandleFunc("/", handlers.Repo.Ping)
 	mux.HandleFunc("/user", handlers.Repo.CreateNewUser).Methods("POST")
 	mux.HandleFunc("/user", handlers.Repo.DeleteUser).Methods("DELETE")
-	mux.HandleFunc("/send-mail", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Sending mail")
-		//send mail
-		from := mail.NewEmail("Taskify", "gj9678@myamu.ac.in")
-		subject := "Sending with SendGrid is Fun"
-		to := mail.NewEmail("Example User", "mohdrashidalam786@gmail.com")
-		plainTextContent := "and easy to do anywhere, even with Go"
-		htmlContent := "<strong>and easy to do anywhere, even with Go</strong>"
-		message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
-		client := sendgrid.NewSendClient(sendgridKey)
-		response, err := client.Send(message)
-		if err != nil {
-			log.Println(err)
-		} else {
-			fmt.Println("email sent")
-			fmt.Println(response.StatusCode)
-			fmt.Println(response.Body)
-			fmt.Println(response.Headers)
-		}
-
-	})
+	
 
 	// mux.HandleFunc("/invite", handlers.Repo.SendInvite).Methods("POST")
 
@@ -74,6 +55,13 @@ func routes(app *config.AppConfig, clerkKey string, sendgridKey string) http.Han
 	subrouter.HandleFunc("/projects/{id}", handlers.Repo.GetProject).Methods("GET")
 	subrouter.HandleFunc("/projects/{id}", handlers.Repo.DeleteProject).Methods("DELETE")
 	subrouter.HandleFunc("/projects/{id}", handlers.Repo.UpdateProject).Methods("PUT")
+
+	//project invite routes
+	subrouter.HandleFunc("/invite/send", handlers.Repo.SendInvite).Methods("POST")
+	subrouter.HandleFunc("/invite/confirm", handlers.Repo.AcceptInvite).Methods("POST")
+	// subrouter.HandleFunc("/reject-invite", handlers.Repo.RejectInvite).Methods("PUT")
+	// subrouter.HandleFunc("/invite", handlers.Repo.DeleteInvite).Methods("DELETE")
+
 
 	// Create a new CORS middleware with a few options
 	corsHandler := middlewareHandler.CORS(

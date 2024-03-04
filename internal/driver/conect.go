@@ -28,7 +28,7 @@ func ConnectDB() (*DB,error) {
 
 	dbCon.SQL=db
 
-	err = db.AutoMigrate(&model.User{},&model.Project{},&model.Invite{},&model.Membership{},&model.ProjectRole{},&model.Role{},&model.Permission{},&model.Task{} )
+	err = db.AutoMigrate(&model.User{},&model.Project{},&model.Invite{},&model.Membership{},&model.Role{},&model.Permission{},&model.Task{} )
 	if err != nil {
 		log.Fatal(err)
 	}
