@@ -7,5 +7,4 @@ import (
 type AppConfig struct{
 	InfoLog 	*log.Logger
 	ErrorLog 	*log.Logger
-	Port        int
 }

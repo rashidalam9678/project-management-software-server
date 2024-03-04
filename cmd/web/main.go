@@ -16,6 +16,9 @@ var app config.AppConfig
 func main(){
 	//load envs
 	godotenv.Load()
+	clerk_key := os.Getenv("CLERK_PRIVATE_KEY")
+	// sendgrid_key:=os.Getenv("SENDGRID_API_KEY")
+	port:=os.Getenv("PORT")
 
 	//Connect to Databas and intitalise the configs
 	db,err:= driver.ConnectDB()
@@ -29,19 +32,18 @@ func main(){
 
 	app.ErrorLog=errorLog
 	app.InfoLog=infoLog
-	app.Port=8080
 
 	repo:=handlers.NewRepo(&app,db)
 	handlers.NewHandlers(repo)
 
 	//create the server
 	srv:= &http.Server{
-		Addr: ":8080",
-		Handler: routes(&app),
+		Addr: ":"+port,
+		Handler: routes(&app,clerk_key),
 	}
 
 	//start the http server
-	fmt.Println("Starting the server at http://localhost:8080")
+	fmt.Println("Starting the server at port 8080")
 	err=srv.ListenAndServe()
 	if err !=nil{
 		log.Fatal("Unable to start the server")

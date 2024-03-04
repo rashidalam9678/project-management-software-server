@@ -48,6 +48,16 @@ func (m *Repository) CreateNewProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//Create the guest role for the project
+	err = m.DB.InsertDefaultRoleAndPermissions(projectID)
+	if err != nil {
+		m.App.ErrorLog.Println(err)
+		payload.Error = true
+		payload.Message = "unable to create default role and permissions"
+		_ = helpers.WriteJSON(w, http.StatusForbidden, payload)
+		return
+	}
+
 	// create the response
 	payload.Data = projectID
 	payload.Error = false
