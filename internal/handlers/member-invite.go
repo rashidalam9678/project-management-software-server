@@ -30,12 +30,10 @@ func (m *Repository) SendInvite(w http.ResponseWriter, r *http.Request) {
 	var payload jsonResponse
 	err := helpers.ReadJSON(w, r, &cred)
 	if err != nil {
-		if err != nil {
-			m.App.ErrorLog.Println(err)
-			payload.Error = true
-			payload.Message = "invalid json supplied, or json missing entirely"
-			_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
-		}
+		m.App.ErrorLog.Println(err)
+		payload.Error = true
+		payload.Message = "invalid json supplied, or json missing entirely"
+		_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
 	}
 
 	// Convert string to uint64
@@ -56,7 +54,7 @@ func (m *Repository) SendInvite(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// generate a token
-	token,_:= helpers.GenerateToken()
+	token, _ := helpers.GenerateToken()
 
 	// make the entry in the database
 	invite, err := m.DB.InsertInvite(cred.Email, projectId, userID, cred.Description, token)
@@ -154,7 +152,7 @@ func (m *Repository) AcceptInvite(w http.ResponseWriter, r *http.Request) {
 		payload.Message = "unable to accept invite"
 		_ = helpers.WriteJSON(w, http.StatusInternalServerError, payload)
 		return
-	
+
 	}
 
 	// Add them to to the project as a guest member
@@ -178,6 +176,69 @@ func (m *Repository) AcceptInvite(w http.ResponseWriter, r *http.Request) {
 		m.App.ErrorLog.Println(err)
 	}
 
+}
+
+func (m *Repository) GetAllInvites(w http.ResponseWriter, r *http.Request) {
+
+	id := r.URL.Query().Get("id")
+
+	uint64Val, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		m.App.ErrorLog.Println(err)
+		return
+	}
+	projectID := uint(uint64Val)
+
+	invites, err := m.DB.GetInvitesByProjectID(projectID)
+	payload := jsonResponse{}
+	if err != nil {
+		payload.Error = true
+		payload.Message = "unable to get data"
+		helpers.WriteJSON(w, http.StatusAccepted, payload)
+	}
+
+	payload.Data = invites
+	payload.Error = false
+	payload.Message = "find all invites"
+	err = helpers.WriteJSON(w, http.StatusOK, payload)
+	if err != nil {
+		m.App.ErrorLog.Println(err)
+	}
+
+}
+
+func (m *Repository) DeleteInvite(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	payload := jsonResponse{}
+
+	uint64Val, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		m.App.ErrorLog.Println(err)
+		return
+	}
+	ID := uint(uint64Val)
+
+	invite, _ := m.DB.GetInviteByID(ID)
+
+	if invite != nil {
+		payload.Error = true
+		payload.Message = "invite does not exists"
+		helpers.WriteJSON(w, http.StatusAccepted, payload)
+	}
+
+	err = m.DB.DeleteInviteByID(ID)
+	if err != nil {
+		payload.Error = true
+		payload.Message = "unable to delete invite"
+		helpers.WriteJSON(w, http.StatusAccepted, payload)
+	}
+
+	payload.Error = false
+	payload.Message = "invite deleted successfully"
+	err = helpers.WriteJSON(w, http.StatusOK, payload)
+	if err != nil {
+		m.App.ErrorLog.Println(err)
+	}
 }
 
 // func (m *Repository) ResendInvite(w http.ResponseWriter, r *http.Request) {

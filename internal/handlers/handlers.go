@@ -42,7 +42,7 @@ type jsonResponse struct {
 
 // Home is the handler for the home page
 func (m *Repository) Ping(w http.ResponseWriter, r *http.Request) {
-	
+
 	payLoad:=jsonResponse{}
 	payLoad.Error=false
 	payLoad.Message="Alive"
@@ -50,13 +50,13 @@ func (m *Repository) Ping(w http.ResponseWriter, r *http.Request) {
 	err:=helpers.WriteJSON(w,http.StatusOK,payLoad)
 	if err != nil{
 		m.App.ErrorLog.Println(err)
-	}		
+	}
 }
 
 // CreateNewUser insert new user in the database
 func (m *Repository) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin","*")
-	
+
 	type credentials struct {
 		Email string `json:"email"`
 		ID string `json:"id"`
@@ -101,7 +101,7 @@ func (m *Repository) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	err=helpers.WriteJSON(w,http.StatusOK,payload)
 	if err != nil{
 		m.App.ErrorLog.Println(err)
-	}		
+	}
 }
 
 // DeleteUser handler deletes the user from the database
@@ -144,4 +144,3 @@ func (m *Repository) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	payload.Message="user deleted successfully"
 	helpers.WriteJSON(w,http.StatusOK,payload)
 }
-
