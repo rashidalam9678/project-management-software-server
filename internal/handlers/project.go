@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"net/http"
-	"strconv"
 	"github.com/gorilla/mux"
 	"github.com/rashidalam9678/project-management-software-server/internal/helpers"
+	"net/http"
+	"strconv"
 )
 
 // CreateNewProject Handler creates a new project
@@ -30,12 +30,10 @@ func (m *Repository) CreateNewProject(w http.ResponseWriter, r *http.Request) {
 
 	err := helpers.ReadJSON(w, r, &cred)
 	if err != nil {
-		if err != nil {
-			m.App.ErrorLog.Println(err)
-			payload.Error = true
-			payload.Message = "invalid json supplied, or json missing entirely"
-			_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
-		}
+		m.App.ErrorLog.Println(err)
+		payload.Error = true
+		payload.Message = "invalid json supplied, or json missing entirely"
+		_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
 	}
 
 	// create the project
@@ -71,7 +69,7 @@ func (m *Repository) CreateNewProject(w http.ResponseWriter, r *http.Request) {
 
 // GetProjects Handler gets all the projects
 func (m *Repository) GetUserProjects(w http.ResponseWriter, r *http.Request) {
-	
+
 	// Retrieve the attached data from the context
 	userID, ok := r.Context().Value("externalId").(string)
 	if !ok {
@@ -108,8 +106,8 @@ func (m *Repository) GetUserProjects(w http.ResponseWriter, r *http.Request) {
 // GetProjectByID Handler gets a project by id
 func (m *Repository) GetProject(w http.ResponseWriter, r *http.Request) {
 	//retrive project id from the url
-	vars:=mux.Vars(r)
-	id:=vars["id"]
+	vars := mux.Vars(r)
+	id := vars["id"]
 
 	// Convert string to uint64
 	uint64Val, err := strconv.ParseUint(id, 10, 64)
@@ -145,8 +143,8 @@ func (m *Repository) GetProject(w http.ResponseWriter, r *http.Request) {
 // DeleteProject Handler deletes a project by id
 func (m *Repository) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	//retrive project id from the url
-	vars:=mux.Vars(r)
-	id:=vars["id"]
+	vars := mux.Vars(r)
+	id := vars["id"]
 
 	// Convert string to uint64
 	uint64Val, err := strconv.ParseUint(id, 10, 64)
@@ -187,8 +185,8 @@ func (m *Repository) DeleteProject(w http.ResponseWriter, r *http.Request) {
 // UpdateProject Handler updates a project by id
 func (m *Repository) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	//retrive project id from the url
-	vars:=mux.Vars(r)
-	id:=vars["id"]
+	vars := mux.Vars(r)
+	id := vars["id"]
 
 	// Convert string to uint64
 	uint64Val, err := strconv.ParseUint(id, 10, 64)
@@ -208,12 +206,10 @@ func (m *Repository) UpdateProject(w http.ResponseWriter, r *http.Request) {
 
 	err = helpers.ReadJSON(w, r, &cred)
 	if err != nil {
-		if err != nil {
-			m.App.ErrorLog.Println(err)
-			payload.Error = true
-			payload.Message = "invalid json supplied, or json missing entirely"
-			_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
-		}
+		m.App.ErrorLog.Println(err)
+		payload.Error = true
+		payload.Message = "invalid json supplied, or json missing entirely"
+		_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
 	}
 
 	//check if the project exists or not

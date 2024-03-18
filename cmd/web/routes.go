@@ -13,7 +13,6 @@ import (
 	"github.com/rashidalam9678/project-management-software-server/internal/config"
 	"github.com/rashidalam9678/project-management-software-server/internal/handlers"
 	"github.com/rashidalam9678/project-management-software-server/internal/helpers"
-	
 )
 
 // jsonResponse is the type used for generic JSON responses
@@ -26,7 +25,7 @@ type jsonResponse struct {
 func routes(app *config.AppConfig, clerkKey string) http.Handler {
 	mux := mux.NewRouter()
 	//get the private key from the environment
-	
+
 
 	//create a new clerk client
 	client, err := clerk.NewClient(clerkKey)
@@ -41,7 +40,7 @@ func routes(app *config.AppConfig, clerkKey string) http.Handler {
 	mux.HandleFunc("/", handlers.Repo.Ping)
 	mux.HandleFunc("/user", handlers.Repo.CreateNewUser).Methods("POST")
 	mux.HandleFunc("/user", handlers.Repo.DeleteUser).Methods("DELETE")
-	
+
 
 	// mux.HandleFunc("/invite", handlers.Repo.SendInvite).Methods("POST")
 
@@ -53,14 +52,24 @@ func routes(app *config.AppConfig, clerkKey string) http.Handler {
 	subrouter.HandleFunc("/projects", handlers.Repo.CreateNewProject).Methods("POST")
 	subrouter.HandleFunc("/projects", handlers.Repo.GetUserProjects).Methods("GET")
 	subrouter.HandleFunc("/projects/{id}", handlers.Repo.GetProject).Methods("GET")
+	subrouter.HandleFunc("/projects/{id}/invites", handlers.Repo.GetAllInvites).Methods("GET")
 	subrouter.HandleFunc("/projects/{id}", handlers.Repo.DeleteProject).Methods("DELETE")
 	subrouter.HandleFunc("/projects/{id}", handlers.Repo.UpdateProject).Methods("PUT")
 
 	//project invite routes
 	subrouter.HandleFunc("/invite/send", handlers.Repo.SendInvite).Methods("POST")
 	subrouter.HandleFunc("/invite/confirm", handlers.Repo.AcceptInvite).Methods("POST")
+	subrouter.HandleFunc("/invite/{id}", handlers.Repo.DeleteInvite).Methods("DELETE")
 	// subrouter.HandleFunc("/reject-invite", handlers.Repo.RejectInvite).Methods("PUT")
 	// subrouter.HandleFunc("/invite", handlers.Repo.DeleteInvite).Methods("DELETE")
+
+
+	// Issues routes
+	subrouter.HandleFunc("/issue", handlers.Repo.CreateIssue).Methods("POST")
+	subrouter.HandleFunc("/issue", handlers.Repo.GetIssuesByProjectsID).Methods("GET")
+	subrouter.HandleFunc("/issue", handlers.Repo.UpdateIssueByID).Methods("PUT")
+	subrouter.HandleFunc("/issue", handlers.Repo.DeleteIssueByID).Methods("DELETE")
+
 
 
 	// Create a new CORS middleware with a few options

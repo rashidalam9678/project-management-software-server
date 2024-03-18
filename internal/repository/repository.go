@@ -37,4 +37,11 @@ type Database interface{
 	// GetInviteByID(id uint)(*model.Invite,error)
 	// GetAllInvitesByProjectID(projectId uint)([]model.Invite,error)
 
+	// Issue related functions
+    CreatedIssue(ProjectID uint , CreatedBy string , Title string , Description string , AssignedTo string , Status string , Priority string)(uint , error)
+	GetAllIssues(ProjectId uint)([](model.Task),error)
+	UpdateIssueById(Title string , Description string , AssignedTo string , Status string,issuesId uint)(error)
+	DeleteIssueById(IssueId uint)(error)
+	GetIssueByID(IssueId uint)(error)
+
 }
