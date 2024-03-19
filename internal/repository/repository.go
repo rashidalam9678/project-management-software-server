@@ -7,7 +7,7 @@ import (
 
 type Database interface{
 	GetUserByEmail(email string) (*model.User,error)
-	InsertUser(email,externalId string)(string,error)
+	InsertUser(email,externalId, firstName, lastName string)(string,error)
 	GetUserByID(externalId string) (*model.User, error)
 	UpdateUserByID(email,id string) error
 	DeleteUserByID(id string) error

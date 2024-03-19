@@ -38,13 +38,15 @@ func (p *postgresDBRepo) GetUserByID(id string) (*model.User, error) {
 
 
 //InsertUser inserts a new user into the database and return the id of the user and error if any
-func (p *postgresDBRepo) InsertUser(email,id string) (string, error) {
+func (p *postgresDBRepo) InsertUser(email,id, firstName, lastName string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	user:=model.User{
 		Email: email,
 		ID: id,
+		FirstName: firstName,
+		LastName: lastName,
 	}
 
 	result:= p.DB.WithContext(ctx).Create(&user)

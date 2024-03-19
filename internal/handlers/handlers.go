@@ -60,6 +60,8 @@ func (m *Repository) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	type credentials struct {
 		Email string `json:"email"`
 		ID string `json:"id"`
+		FirstName string `json:"first_name"`
+		LastName string `json:"last_name"`
 	}
 
 	var creds credentials
@@ -84,7 +86,7 @@ func (m *Repository) CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//now insert user in database
-	userId,err:=m.DB.InsertUser(creds.Email,creds.ID)
+	userId,err:=m.DB.InsertUser(creds.Email,creds.ID, creds.FirstName, creds.LastName)
 
 	if err != nil {
 		m.App.ErrorLog.Println(err)

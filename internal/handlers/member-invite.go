@@ -29,6 +29,7 @@ func (m *Repository) SendInvite(w http.ResponseWriter, r *http.Request) {
 	var cred credentials
 	var payload jsonResponse
 	err := helpers.ReadJSON(w, r, &cred)
+
 	if err != nil {
 		m.App.ErrorLog.Println(err)
 		payload.Error = true
@@ -152,8 +153,9 @@ func (m *Repository) AcceptInvite(w http.ResponseWriter, r *http.Request) {
 		payload.Message = "unable to accept invite"
 		_ = helpers.WriteJSON(w, http.StatusInternalServerError, payload)
 		return
+		}
 
-	}
+
 
 	// Add them to to the project as a guest member
 	_, err = m.DB.InsertMembership(invite.ProjectID, userID, roleID)

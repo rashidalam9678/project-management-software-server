@@ -69,7 +69,6 @@ func (m *Repository) CreateNewProject(w http.ResponseWriter, r *http.Request) {
 
 // GetProjects Handler gets all the projects
 func (m *Repository) GetUserProjects(w http.ResponseWriter, r *http.Request) {
-
 	// Retrieve the attached data from the context
 	userID, ok := r.Context().Value("externalId").(string)
 	if !ok {
@@ -205,6 +204,7 @@ func (m *Repository) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	var payload jsonResponse
 
 	err = helpers.ReadJSON(w, r, &cred)
+
 	if err != nil {
 		m.App.ErrorLog.Println(err)
 		payload.Error = true
