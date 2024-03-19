@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"time"
+
 	model "github.com/rashidalam9678/project-management-software-server/internal/models"
 )
 
@@ -16,7 +17,7 @@ func (p *postgresDBRepo) GetUserByEmail(email string) (*model.User, error) {
 	result:=p.DB.WithContext(ctx).Where("email = ?",email).First(&user)
 	if result.Error != nil{
 		return nil,result.Error
-	
+
 	}
 
 	return &user, nil
@@ -30,7 +31,7 @@ func (p *postgresDBRepo) GetUserByID(id string) (*model.User, error) {
 	result:=p.DB.WithContext(ctx).Where("id = ?",id).First(&user)
 	if result.Error != nil{
 		return nil,result.Error
-	
+
 	}
 	return &user, nil
 }
@@ -40,7 +41,7 @@ func (p *postgresDBRepo) GetUserByID(id string) (*model.User, error) {
 func (p *postgresDBRepo) InsertUser(email,id, firstName, lastName string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	user:=model.User{
 		Email: email,
 		ID: id,
@@ -60,7 +61,7 @@ func (p *postgresDBRepo) InsertUser(email,id, firstName, lastName string) (strin
 func (p *postgresDBRepo) UpdateUserByID(email,id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	user:=model.User{
 		Email: email,
 		ID: id,
@@ -78,7 +79,7 @@ func (p *postgresDBRepo) UpdateUserByID(email,id string) error {
 func (p *postgresDBRepo) DeleteUserByID(id string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	result:= p.DB.WithContext(ctx).Where("id = ?",id).Delete(&model.User{})
 	if result.Error != nil{
 		return result.Error
@@ -93,7 +94,7 @@ func (p *postgresDBRepo) DeleteUserByID(id string) error {
 func (p *postgresDBRepo) InsertProject(title,description,userID string) (uint, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	project:=model.Project{
 		Title: title,
 		Description: description,
@@ -125,7 +126,7 @@ func (p *postgresDBRepo) GetProjectByID(id uint) (*model.Project, error) {
 func (p *postgresDBRepo) UpdateProjectByID(title,description string,id uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	project:=model.Project{
 		Title: title,
 		Description: description,
@@ -143,7 +144,7 @@ func (p *postgresDBRepo) UpdateProjectByID(title,description string,id uint) err
 func (p *postgresDBRepo) DeleteProjectByID(id uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	result:= p.DB.WithContext(ctx).Where("id = ?",id).Delete(&model.Project{})
 	if result.Error != nil{
 		return result.Error
@@ -169,7 +170,7 @@ func (p *postgresDBRepo) GetAllProjectsByUserID(userID string) ([]model.Project,
 func (p *postgresDBRepo) InsertRole(projectID uint,roleName string) (uint, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	role:=model.Role{
 		ProjectID: projectID,
 		Name: roleName,
@@ -188,7 +189,7 @@ func (p *postgresDBRepo) InsertInvite(email string,projectID uint,invitedBy stri
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	
+
 	invite:=model.Invite{
 		Email: email,
 		ProjectID: projectID,
@@ -243,7 +244,7 @@ func (p *postgresDBRepo) GetInviteByEmailAndProjectID(email string,projectID uin
 	return &invite, nil
 }
 
-// GetInvite by token 
+// GetInvite by token
 func (p *postgresDBRepo) GetInviteByToken(token string) (*model.Invite, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -260,7 +261,7 @@ func (p *postgresDBRepo) GetInviteByToken(token string) (*model.Invite, error) {
 func (p *postgresDBRepo) DeleteInviteByID(id uint) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	result:= p.DB.WithContext(ctx).Where("id = ?",id).Delete(&model.Invite{})
 	if result.Error != nil{
 		return result.Error
@@ -273,7 +274,7 @@ func (p *postgresDBRepo) DeleteInviteByID(id uint) error {
 func (p *postgresDBRepo) UpdateInviteByID(id uint,status string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	invite:=model.Invite{
 		Status: status,
 	}
@@ -292,7 +293,7 @@ func (p *postgresDBRepo) UpdateInviteByID(id uint,status string) error {
 func (p *postgresDBRepo) InsertMembership(projectID uint,userID string,roleId uint) (uint, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	
+
 	membership:=model.Membership{
 		ProjectID: projectID,
 		UserID: userID,
@@ -306,3 +307,86 @@ func (p *postgresDBRepo) InsertMembership(projectID uint,userID string,roleId ui
 	return membership.ID, nil
 }
 
+
+
+func (p *postgresDBRepo) CreatedIssue(ProjectID uint , CreatedBy string , Title string , Description string , AssignedTo string , Status string , Priority string)(uint , error){
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	task := model.Task{
+		ProjectID: ProjectID,
+		CreatedBy: CreatedBy,
+		Title: Title,
+		Description: Description,
+		AssignedTo: AssignedTo,
+		Status: Status,
+		Priority: Priority,
+
+	}
+
+	result:= p.DB.WithContext(ctx).Create(&task)
+	if result.Error != nil{
+		return 0, errors.New(result.Error.Error())
+	}
+
+	return task.ID, nil
+}
+
+
+func (p *postgresDBRepo) GetAllIssues(projectId uint)([]model.Task , error){
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var tasks = []model.Task{}
+
+	result := p.DB.WithContext(ctx).Where("id = ?",projectId).Find(&tasks)
+	if result.Error != nil{
+		return nil,result.Error
+	}
+	return tasks , nil;
+}
+
+func (p *postgresDBRepo) GetIssueByID(IssueId uint)(error){
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var task = model.Task{}
+
+	result := p.DB.WithContext(ctx).Where("id = ?",IssueId).Find(&task)
+	if result.Error != nil{
+		return result.Error
+	}
+	return nil;
+
+}
+
+func (p *postgresDBRepo) UpdateIssueById( Title string , Description string , AssignedTo string , Status string ,issuesId uint)(error){
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	task := model.Task{
+		Title: Title,
+		Description: Description,
+		AssignedTo: AssignedTo,
+		Status: Status,
+	}
+
+	result:= p.DB.WithContext(ctx).Model(&task).Where("id = ?",issuesId).Updates(&task)
+	if result.Error != nil{
+		return result.Error
+	}
+
+	return nil
+}
+
+func (p *postgresDBRepo) DeleteIssueById(issueId uint)(error){
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	result:= p.DB.WithContext(ctx).Where("id = ?",issueId).Delete(&model.Task{})
+	if result.Error != nil{
+		return result.Error
+	}
+
+	return nil
+}

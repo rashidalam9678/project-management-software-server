@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"net/http"
-	"strconv"
 	"github.com/gorilla/mux"
 	"github.com/rashidalam9678/project-management-software-server/internal/helpers"
+	"net/http"
+	"strconv"
 )
 
 // CreateNewProject Handler creates a new project
