@@ -7,6 +7,8 @@ import (
 type User struct {
 	ID        string    `gorm:"primaryKey; index:idx_user_id"`
 	Email     string    `gorm:"unique;not null"`
+	FirstName string    `gorm:"not null"`
+	LastName  string    `gorm:"not null"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 	Projects  []Project `gorm:"foreignKey:UserID;references:ID"` // One-to-Many relationship: One User can have multiple Projects

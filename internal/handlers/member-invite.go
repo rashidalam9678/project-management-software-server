@@ -29,13 +29,12 @@ func (m *Repository) SendInvite(w http.ResponseWriter, r *http.Request) {
 	var cred credentials
 	var payload jsonResponse
 	err := helpers.ReadJSON(w, r, &cred)
+
 	if err != nil {
-		if err != nil {
-			m.App.ErrorLog.Println(err)
-			payload.Error = true
-			payload.Message = "invalid json supplied, or json missing entirely"
-			_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
-		}
+		m.App.ErrorLog.Println(err)
+		payload.Error = true
+		payload.Message = "invalid json supplied, or json missing entirely"
+		_ = helpers.WriteJSON(w, http.StatusBadRequest, payload)
 	}
 
 	// Convert string to uint64
@@ -56,7 +55,7 @@ func (m *Repository) SendInvite(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// generate a token
-	token,_:= helpers.GenerateToken()
+	token, _ := helpers.GenerateToken()
 
 	// make the entry in the database
 	invite, err := m.DB.InsertInvite(cred.Email, projectId, userID, cred.Description, token)
@@ -154,8 +153,7 @@ func (m *Repository) AcceptInvite(w http.ResponseWriter, r *http.Request) {
 		payload.Message = "unable to accept invite"
 		_ = helpers.WriteJSON(w, http.StatusInternalServerError, payload)
 		return
-	
-	}
+		}
 
 	// Add them to to the project as a guest member
 	_, err = m.DB.InsertMembership(invite.ProjectID, userID, roleID)
