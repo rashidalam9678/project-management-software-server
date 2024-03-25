@@ -44,4 +44,10 @@ type Database interface{
 	DeleteIssueById(IssueId uint)(error)
 	GetIssueByID(IssueId uint)(error)
 
+
+	// chat related functions
+	SaveMessage(ProjectID uint , SenderID uint , Message string)(error)
+	GetAllMembersByProjectID(ProjectID uint) ([]model.Membership, error)
+	GetMessagesByProjectId(ProjectID uint) ([]model.Message, error)
+
 }
