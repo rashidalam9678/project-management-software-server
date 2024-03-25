@@ -72,6 +72,12 @@ func routes(app *config.AppConfig, clerkKey string) http.Handler {
 
 
 
+	//chat module routes
+	subrouter.HandleFunc("/projects/{id}/messages",handlers.Repo.GetMessages).Methods("GET")
+	subrouter.HandleFunc("/projects/:id/messages",handlers.Repo.CreateMessage).Methods("POST")
+
+
+
 	// Create a new CORS middleware with a few options
 	corsHandler := middlewareHandler.CORS(
 		middlewareHandler.AllowedOrigins([]string{"*"}), // Adjust as needed for your frontend's origin

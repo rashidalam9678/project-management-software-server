@@ -23,6 +23,7 @@ type Project struct {
 	Members     []Membership
 	Tasks       []Task
 	Roles       []Role
+	Messages    []Message
 }
 
 type Invite struct {
@@ -79,4 +80,12 @@ type Task struct {
 	Priority    string    `gorm:"not null;default:'low'"`
 	CreatedAt   time.Time `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime"`
+}
+
+type Message struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	ProjectID uint      `json:"project_id"`
+	SenderID  uint      `json:"sender_id"`
+	Message   string    `json:"message"`
+	CreatedAt time.Time `json:"created_at"`
 }

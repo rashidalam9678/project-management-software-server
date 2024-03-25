@@ -388,3 +388,50 @@ func (p *postgresDBRepo) DeleteIssueById(issueId uint)(error){
 
 	return nil
 }
+
+
+func (p *postgresDBRepo) SaveMessage(ProjectID uint , SenderID uint , Message string)(error){
+	ctx , cancle := context.WithTimeout(context.Background(),3*time.Second)
+	defer cancle()
+
+
+	msg := model.Message{
+		ProjectID: ProjectID,
+		SenderID: SenderID,
+		Message: Message,
+	}
+
+	result:= p.DB.WithContext(ctx).Create(&msg)
+	if result.Error != nil{
+		return errors.New(result.Error.Error())
+	}
+
+	return nil
+}
+
+
+func (p *postgresDBRepo) GetAllMembersByProjectID(ProjectID uint) ([]model.Membership, error){
+	ctx , cancle := context.WithTimeout(context.Background(),3*time.Second)
+	defer cancle()
+
+	var members = []model.Membership{}
+	result := p.DB.WithContext(ctx).Where("id = ?",ProjectID).Find(&members)
+	if result.Error != nil{
+		return nil,result.Error
+	}
+	return members , nil;
+}
+
+func (p *postgresDBRepo) GetMessagesByProjectId(ProjectID uint) ([]model.Message, error) {
+	ctx , cancle := context.WithTimeout(context.Background(),3*time.Second)
+	defer cancle()
+
+	var messages = []model.Message{}
+	result := p.DB.WithContext(ctx).Where("project_id = ?",ProjectID).Find(&messages)
+
+	if result.Error != nil {
+		return nil , result.Error
+	}
+
+	return messages , nil
+}
